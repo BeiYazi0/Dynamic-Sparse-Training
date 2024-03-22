@@ -127,6 +127,7 @@ class MaskedVgg(BaseModel):
         layers = []
         for _ in range(num_convs):
             layers.append(MaskedConv2d(in_channels, out_channels, kernel_size=3, padding=1))
+            layers.append(nn.BatchNorm2d(out_channels))
             layers.append(nn.ReLU())
             in_channels = out_channels
         layers.append(nn.MaxPool2d(kernel_size=2, stride=2))
@@ -143,9 +144,9 @@ class MaskedVgg(BaseModel):
         return nn.Sequential(
             *conv_blks, nn.Flatten(),
             # 全连接层部分
-            MaskedLinear(512, 256), nn.ReLU(),
-            MaskedLinear(256, 256), nn.ReLU(),  # 似乎只提到fc1和fc2
-            MaskedLinear(256, 10))
+            MaskedLinear(512, 512), nn.BatchNorm1d(512), nn.ReLU(),
+            # MaskedLinear(512, 512), nn.ReLU(), nn.Dropout(0.4), # 似乎只提到fc1和fc2
+            MaskedLinear(512, 10))
 
 
 class MaskedWideResNet(BaseModel):
@@ -160,6 +161,7 @@ class MaskedWideResNet(BaseModel):
             conv1, nn.BatchNorm2d(nChannels[0]), nn.ReLU(),
             nn.MaxPool2d(kernel_size=3, stride=2, padding=1),
             *conv,
+            nn.BatchNorm2d(64 * widen_factor), nn.ReLU(),
             nn.AdaptiveAvgPool2d((1, 1)),
             nn.Flatten(), MaskedLinear(512, 10))
         super(MaskedWideResNet, self).__init__(net)

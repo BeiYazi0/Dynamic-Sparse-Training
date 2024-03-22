@@ -60,7 +60,7 @@ class MaskedLinear(BaseMaskedLayer):
                  in_features,
                  out_features,
                  bias=True):
-        super(MaskLinear, self).__init__()
+        super(MaskedLinear, self).__init__()
         self._weight_num = out_features * in_features
 
         self.thresholds = nn.Parameter(torch.zeros((out_features, 1)))

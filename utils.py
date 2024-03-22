@@ -177,7 +177,7 @@ class Tester:
         plt.savefig(file)
 
     @staticmethod
-    def test_masked_vgg16(lr=0.1, alpha=5e-6):
+    def test_masked_vgg16(lr=0.01, alpha=5e-6):
         epoch, batch_size = 160, 64
 
         net = MaskedVgg()
@@ -188,7 +188,7 @@ class Tester:
         train_iter, test_iter = load_cifar_10(batch_size)
 
         acc, model_remain, layer_remain = train_net(net, loss, trainer, alpha, train_iter, test_iter, epoch, scheduler)
-        plot_all(epoch, acc, model_remain, layer_remain[[0, 2, 4, 7, 13, 15]], 'epoch',
+        plot_all(epoch, acc, model_remain, layer_remain[[0, 2, 4, 7, 13, -1]], 'epoch',
                  ['conv1', 'conv2', 'conv3', 'conv4', 'fc1', 'fc2'], ylim2=[0.3, 1.])
         plt.savefig("res/vgg-16.png")
 
@@ -207,7 +207,31 @@ class Tester:
                                                     scheduler)
         plot_all(epoch, acc, model_remain, layer_remain[[0, 1, 3, 5, 6, -1]], 'epoch',
                  ['conv1', 'conv2', 'conv3', 'conv4', 'conv5', 'fc'], ylim2=[0.3, 1.])
-        plt.savefig("res/vgg-16.png")
+        plt.savefig("res/wide_res.png")
+
+    @staticmethod
+    def test_diff_a(wide_f, lr=0.1):
+        epoch, batch_size = 160, 64
+        test_acc, model_remains = [], []
+
+        train_iter, test_iter = load_cifar_10(batch_size)
+        loss = nn.CrossEntropyLoss()
+
+        alphas = torch.tensor([1e-7, 1e-6, 1e-5, 1e-4])
+        for alpha in alphas:
+            net = MaskedWideResNet(wide_f)
+            trainer = torch.optim.SGD(net.parameters(), lr=lr, momentum=0.9)
+            scheduler = lr_scheduler.MultiStepLR(trainer, milestones=[80, 120], gamma=0.1)
+
+            acc, model_remain, _ = train_net(net, loss, trainer, alpha, train_iter, test_iter, epoch, scheduler)
+            test_acc.append(acc[-1])
+            model_remains.append(model_remain[-1])
+
+        plot(alphas, [torch.tensor(model_remains), torch.tensor(test_acc)], xlabel='alpha',
+             ylabel=['model remain ratio', 'test_acc'], legend=['model remain ratio', 'test_acc'],
+             twins=True, ylim2=[0.8, 0.95], xscale='log')
+
+
 
     @staticmethod
     def test_model():
