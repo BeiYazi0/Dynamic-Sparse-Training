@@ -219,6 +219,7 @@ class Tester:
 
         alphas = torch.tensor([1e-7, 1e-6, 1e-5, 1e-4])
         for alpha in alphas:
+            print(alpha)
             net = MaskedWideResNet(wide_f)
             trainer = torch.optim.SGD(net.parameters(), lr=lr, momentum=0.9)
             scheduler = lr_scheduler.MultiStepLR(trainer, milestones=[80, 120], gamma=0.1)
@@ -230,6 +231,8 @@ class Tester:
         plot(alphas, [torch.tensor(model_remains), torch.tensor(test_acc)], xlabel='alpha',
              ylabel=['model remain ratio', 'test_acc'], legend=['model remain ratio', 'test_acc'],
              twins=True, ylim2=[0.8, 0.95], xscale='log')
+
+        plt.save("res/diff_a.png")
 
 
 

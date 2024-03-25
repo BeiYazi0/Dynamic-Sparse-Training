@@ -319,9 +319,9 @@ lstm-b 结构为两个 MaskedLSTMCell，隐层大小为 256，后接一个 Maske
 
 实验设定：epoch, batch_size, lr = 160, 64, 0.1，alpha = 5e-6，优化算法为 SGD，momentum=0.9，学习率在第80、120 epoch 衰减为原来的0.1。
 
-仍在复现中，似乎出现过拟合，test_acc 保持在 10%。
+最终结果：模型剩余率为 12.60%，test_acc=87.02%。
 
-![png](./res/vgg16_res.png)
+![png](./res/vgg-16-01.png)
 
 #### WideResNet-16-8
 
@@ -340,21 +340,23 @@ WideResNet-16-8 以一个卷积层开始，中间每两个残差块组成一个 
 
 实验设定：epoch, batch_size, lr = 160, 64, 0.1，alpha = 5e-6，优化算法为 SGD，momentum=0.9，学习率在第80、120 epoch 衰减为原来的0.1。
 
-仍在复现中，似乎表现良好。
+最终结果：模型剩余率为 18.10%，test_acc=83.50%。
 
-![png](./res/wideresnet_res.png)
+![png](./res/wideresnet-16-8.png)
 
 ### 4.3 ImageNet
 
 作者给出了使用不同的方法在 ImageNet 数据集上剪枝 ResNet-50 的结果，如下图所示。
 
-![png](./imgs/imagenet.png)
+暂未复现。
 
-本部分暂未复现。
+![png](./imgs/imagenet.png)
 
 ### 4.4 不同剩余率下的剪枝表现
 
 作者认为使用中等的 alpha 值，很容易获得一个稀疏的模型，其表现与原模型相当，甚至更好。以下为作者在不同的 alpha 下使用不同网络测试的结果。
+
+暂未复现。
 
 ![png](./imgs/dif_alpha.png)
 
@@ -380,9 +382,13 @@ WideResNet-16-8 以一个卷积层开始，中间每两个残差块组成一个 
 衰减前 fc2 无法提取到足够多有用的特征，因此其中提取无效特征的参数被剪掉了，呈现出低剩余率。而衰减后，有效特征能够被前面的层很好地提取，这使得在前面
 训练中不重要的 fc2 变得重要起来。
 
-暂未复现。
-
 支持这一假设的两个事实：在 epoch 80，test_acc 从 85% 迅速跃升至 92%；前面的卷积层的剩余率几乎不变化，即它们的参数是必需的，以提取重要特征。
+
+感觉与作者的图有很大不同。
+
+![png](./res/vgg-16-01.png)
+
+![png](./res/vgg-16-001.png)
 
 ![png](./imgs/5_2.png)
 
